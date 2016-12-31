@@ -10,6 +10,7 @@ use HTTP::Request;
 use IO::File;
 use JSON qw/to_json from_json/;
 use LWP::UserAgent;
+use Data::Dumper;
 
 GetOptions(
     'help'     => sub { HelpMessage(0) },
@@ -88,7 +89,16 @@ sub export {
     my $fh = IO::File->new($output, q{>});
 
     if ($response->is_success) {
-        print $fh $response->decoded_content;
+        my $res = from_json($response->decoded_content);
+        my $export = [];
+        foreach (@{ $res->{'docs'} }) {
+            delete $_->{'found'};
+            delete $_->{'_version'};
+            delete $_->{'_index'};
+            push @{ $export }, $_;
+        }
+        my $export_json = to_json($export);
+        print $fh $export_json;
     }
     else {
         print STDERR $response->status_line."\n";
