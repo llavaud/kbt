@@ -1,0 +1,36 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Codename: stable
+Date: Sat, 31 Dec 2016 09:24:33 UTC
+Architectures: amd64
+Components: main
+Description: Apt repository for project kbt
+MD5Sum:
+ b67d9ba9f7916368672828f17697d8e0 615 main/binary-amd64/Packages
+ f699bcc211bebc888a9cac66e9cf2d66 450 main/binary-amd64/Packages.gz
+ 99bf69ab823874ffb670733f129fa47a 80 main/binary-amd64/Release
+SHA1:
+ ac7fa6e5cd96aba61b877f4a6654fc4c9efb7a3e 615 main/binary-amd64/Packages
+ 6db3f837257702f036c5fab7c6d7e39ae02d211d 450 main/binary-amd64/Packages.gz
+ 27c3b5a7a980046408e0acc75551c9731395562b 80 main/binary-amd64/Release
+SHA256:
+ 82aa523e8cc1ed8b6b0ff7e122d6d6623eba7b5b7105d193442e4fe8e43ca9c9 615 main/binary-amd64/Packages
+ 8f196bc3b1115a18a1a6a5d119483c08d931287ebf92c08d5b3d7b9796d50a46 450 main/binary-amd64/Packages.gz
+ ffb2b527a129df85a128e39786ee49dc65ea9112d9f957c7ad237723fc7acdc5 80 main/binary-amd64/Release
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCgAGBQJYZ3lRAAoJEF0Wt+X9q1Zn604P/jL9FY4kx/kIhHTreO5Bac+n
+5L3buOrzXQ1iWP6zD8OplOnKsmLXcoMC5VJj58M52R8odoRBoTaKaVvQGqTH6XNy
+W3Q3d3YOGFmxEbmD6YPo9jFzUZptNrdvMJrGJ8D88U/5JQqOZkexaACGBL7TpeFF
+46yhD8xF4KgxMle3GAutZuMPhyU5uiX7S6LtZQEVQ7mNKrxp6hb8fmaTfhJAlk5d
+nM3XYxqfogyYFmxJ7RdaGW2vATsDwUfXU93laLTwycjUcv2p6Y9UJ9MZfeWzBmJQ
+/6B5kL1DIZ5TpDd2iwsNH50me13uF5kOHyvCTQhAU7F8QNP5AnVzNEPN5duWvHem
+PYyQcpoeId2woiYpnft6K0WHWdGqjGQe6nVoOYN+UuxwSaOvjNJWjpgxbeizgX30
++ULUfQkyfTUcNUe7Yd9q5usjUyIh7tdZ18hKlSQJ8+iBinurGUnxXyhlVeIlGRpR
+WRjpjhQhMjr3Ce31T/cMnJIcXuwidNLc00vrVXh2LbWz7cx1KSsn03XhYBIxgRus
+7Zgkq4MPdtIi8LMGu9TVDvv6nktjf/jIN/2Z99I8w9dQMXyOjPzlC/9Biq0z63fy
+lKcSuxalmIW1lBn8tx2CNClKIt+U4AWQpMZYZJlmq2opY1xnAK4VHAbeOC7j0FDn
+fIxsI0+Tzf3uZ43VEezW
+=PcNH
+-----END PGP SIGNATURE-----
