@@ -1,0 +1,44 @@
+html {
+    color: #000;
+    background: #fefefe;
+    font-family: serif;
+    margin: 1em;
+    border: 0;
+    padding: 0;
+    line-height: 120%;
+}
+
+body {
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+h1, h2 {
+    text-align: left;
+    font-family: sans-serif;
+    background-color: #f0f0ff;
+    color: #3c3c3c;
+    border: #a7a7a7 1px solid;
+    padding: 10px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 180%;
+    line-height: 150%;
+}
+
+h2 {
+    font-size: 150%
+}
+
+ul {
+    list-style-type: square;
+}
+
+.code {
+    font-size: 75%;
+    line-height: 150%;
+    font-family: sans-serif;
+}
