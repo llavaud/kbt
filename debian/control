@@ -12,4 +12,4 @@ Package: kbt
 Architecture: all
 Depends: ${perl:Depends}, perl (>=5.10), libhttp-message-perl, libjson-perl, libwww-perl
 Description: Kibana Backup Tool
- This script allow to list and export kibana resources like searchs, visualizations and dashboards.
+ This script allow to list and export kibana resources like search, visualization and dashboard.

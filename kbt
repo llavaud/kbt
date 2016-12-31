@@ -109,7 +109,7 @@ kbt - Kibana Backup Tool
 
 =head1 DESCRIPTION
 
-This script allow to list and export kibana resources like searchs, visualizations and dashboards.
+This script allow to list and export kibana resources like search, visualization and dashboard.
 
 =head1 SYNOPSIS
 

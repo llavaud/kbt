@@ -1,6 +1,6 @@
 # Kibana Backup Tool
 
-This script allow to list and export kibana resources like searchs, visualizations and dashboards.
+This script allow to list and export kibana resources like search, visualization and dashboard.
 
 ## Table of contents
 * [Installation](#installation)
