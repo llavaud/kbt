@@ -105,11 +105,9 @@ __END__
 
 =head1 NAME
 
-kbt
+kbt - Kibana Backup Tool
 
 =head1 DESCRIPTION
-
-Kibana Backup Tool
 
 This script allow to list and export kibana resources like searchs, visualizations and dashboards.
 
