@@ -1,3 +1,9 @@
+kbt (0.2) stable; urgency=medium
+
+  * correcting a bug with the exported json format
+
+ -- Laurent Lavaud <l.lavaud@gmail.com>  Sat, 31 Dec 2016 14:04:36 +0100
+
 kbt (0.1) stable; urgency=medium
 
   * inital release
