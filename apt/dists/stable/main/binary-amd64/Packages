@@ -1,5 +1,5 @@
 Package: kbt
-Version: 0.1
+Version: 0.2
 Architecture: all
 Maintainer: Laurent Lavaud <l.lavaud@gmail.com>
 Installed-Size: 18
@@ -7,11 +7,11 @@ Depends: perl:any, perl (>= 5.10), libhttp-message-perl, libjson-perl, libwww-pe
 Homepage: https://llavaud.github.io/kbt
 Priority: optional
 Section: utils
-Filename: pool/main/k/kbt/kbt_0.1_all.deb
-Size: 5198
-SHA256: 2d81bdc00c27b5f19e00c3c4ab450ef1244964f460a79121987f62f7f5087b28
-SHA1: 05559f19fd94ec265c110b46cdb9ff0c35d3f03c
-MD5sum: 4e05c1db35f153bb8945e85c527d3b38
+Filename: pool/main/k/kbt/kbt_0.2_all.deb
+Size: 5336
+SHA256: 4cf45955883f5e24edf4c189d3ff22b19b4ebc706d99bf0c8313b27d2981dcfb
+SHA1: 0181f048f8f3fea9a66931d406ca421171486288
+MD5sum: 6dcefd2089bc28e0548dd1da09ac2e4b
 Description: Kibana Backup Tool
- This script allow to list and export kibana resources like searchs, visualizations and dashboards.
+ This script allow to list and export kibana resources like search, visualization and dashboard.
 
