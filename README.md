@@ -34,7 +34,7 @@ sudo apt-get install kbt
 
 If you dont want to add a new repository on your system you can also retrieve the [latest zip/tar.gz archive](https://github.com/llavaud/kbt/releases/latest)
 
-This script depends on several binary or Perl library, so you need to install the following **Debian/Ubuntu** packages before using it:
+This script depends on several Perl library, so you need to install the following **Debian/Ubuntu** packages before using it:
 
 ```bash
 sudo apt-get install libhttp-message-perl libjson-perl libwww-perl
