@@ -19,6 +19,7 @@ GetOptions(
     'type=s'   => \(my $type = 'all'),
 ) or HelpMessage(1);
 
+# add default port if missing
 $host =~ s/^([\d\.]+)(?!\:\d+)$/$1:5601/;
 
 my $cmd = $ARGV[0];
@@ -98,11 +99,19 @@ sub export {
     return 1;
 }
 
-=pod
+__END__
+
+=encoding utf8
 
 =head1 NAME
 
-kbt - Kibana backup Tool, export kibana data
+kbt
+
+=head1 DESCRIPTION
+
+Kibana Backup Tool
+
+This script allow to list and export kibana resources like searchs, visualizations and dashboards.
 
 =head1 SYNOPSIS
 
@@ -125,6 +134,6 @@ Laurent Lavaud
 
 =head1 VERSION
 
-0.01
+0.1
 
 =cut

@@ -1,0 +1,15 @@
+Source: kbt
+Section: utils
+Priority: optional
+Maintainer: Laurent Lavaud <l.lavaud@gmail.com>
+Build-Depends: debhelper (>=9)
+Standards-Version: 3.9.6
+Homepage: https://llavaud.github.io/kbt
+Vcs-Git: git@github.com:llavaud/kbt.git
+Vcs-Browser: https://github.com/llavaud/kbt
+
+Package: kbt
+Architecture: all
+Depends: ${perl:Depends}, perl (>=5.10), libhttp-message-perl, libjson-perl, libwww-perl
+Description: Kibana Backup Tool
+ This script allow to list and export kibana resources like searchs, visualizations and dashboards.
