@@ -10,15 +10,15 @@ _kbt()
 
     case "${prev}" in
         --type)
-        	COMPREPLY=( $(compgen -W "${types}" -- ${cur}) )
+            COMPREPLY=( $(compgen -W "${types}" -- ${cur}) )
             return 0
             ;;
         *)
             ;;
     esac
 
-	COMPREPLY=( $(compgen -W "${options}" -- ${cur}) )
-	return 0
+    COMPREPLY=( $(compgen -W "${options}" -- ${cur}) )
+    return 0
 }
 
 complete -F _kbt kbt
