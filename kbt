@@ -10,17 +10,18 @@ use HTTP::Request;
 use IO::File;
 use JSON qw/to_json from_json/;
 use LWP::UserAgent;
+use Data::Dumper;
 
 GetOptions(
     'help'     => sub { HelpMessage(0) },
-    'host=s'   => \(my $host = 'localhost:5601'),
+    'host=s'   => \(my $host = 'localhost:9200'),
     'index=s'  => \(my $index = '.kibana'),
     'output=s' => \(my $output = 'kbt_export.json'),
     'type=s'   => \(my $type = 'all'),
 ) or HelpMessage(1);
 
 # add default port if missing
-$host =~ s/^([\d\.]+)(?!\:\d+)$/$1:5601/;
+$host =~ s/^(.*)(?!\:\d+)$/$1:9200/;
 
 my $cmd = $ARGV[0];
 
@@ -46,8 +47,7 @@ sub list {
         next if ($type ne 'all' and $t ne $type);
 
         print '* '.uc $t.":\n" if $type eq 'all' and $export == 0;
-        my $request = HTTP::Request->new(POST => "http://$host/elasticsearch/$index/$t/_search");
-        $request->header('kbn-version' => '5.1.1');
+        my $request = HTTP::Request->new(POST => "http://$host/$index/$t/_search");
         $request->content('{"query":{"match_all":{}}}');
 
         my $ua = LWP::UserAgent->new;
@@ -78,8 +78,7 @@ sub export {
 
     my $json = to_json($ids);
 
-    my $request = HTTP::Request->new(POST => "http://$host/elasticsearch/$index/_mget");
-    $request->header('kbn-version' => '5.1.1');
+    my $request = HTTP::Request->new(POST => "http://$host/$index/_mget");
     $request->content($json);
 
     my $ua = LWP::UserAgent->new;
@@ -96,8 +95,7 @@ sub export {
             delete $_->{'_index'};
             push @{ $export }, $_;
         }
-        my $export_json = to_json($export);
-        print $fh $export_json;
+        print $fh to_json($export);
     }
     else {
         print STDERR $response->status_line."\n";
@@ -127,7 +125,7 @@ kbt [OPTIONS] <COMMAND>
  OPTIONS
    --type     TYPE           Type of kibana resources {search|visualization|dashboard} (defaults to all)
    --output   FILE           Backup file (defaults to kbt_export.json)
-   --host     IP:PORT        Ip address of kibana instance (defaults to localhost:5601)
+   --host     IP:PORT        Ip address of elasticsearch instance (defaults to localhost:9200)
    --index    INDEX          Kibana index (defaults to .kibana)
    --help                    Print this help
 

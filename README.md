@@ -52,7 +52,7 @@ kbt [OPTIONS] <COMMAND>
  OPTIONS
    --type     TYPE           Type of kibana resources {search|visualization|dashboard} (defaults to all)
    --output   FILE           Backup file (defaults to kbt_export.json)
-   --host     IP:PORT        Ip address of kibana instance (defaults to localhost:5601)
+   --host     IP:PORT        Ip address of elasticsearch instance (defaults to localhost:9200)
    --index    INDEX          Kibana index (defaults to .kibana)
    --help                    Print this help
 
