@@ -1,6 +1,6 @@
-# Kibana Backup Tool
+# kbt - Kibana Backup Tool
 
-This script allow to list and export kibana resources like search, visualization and dashboard.
+This script allow to list, export and import kibana resources (search, visualization and dashboard).
 
 You can export everything you want from Kibana interface, but if you want to setup a cronjob to do regular backup or just do it in CLI, this is the right tool to use.
 
@@ -52,13 +52,16 @@ Once the packages are installed, you just need to extract the archive
 kbt [OPTIONS] <COMMAND>
 
  OPTIONS
-   --type     TYPE           Type of kibana resources {search|visualization|dashboard} (defaults to all)
-   --output   FILE           Backup file (defaults to kbt_export.json)
-   --host     IP:PORT        Ip address of elasticsearch instance (defaults to localhost:9200)
-   --index    INDEX          Kibana index (defaults to .kibana)
+   --file       FILE         Backup file to import (defaults to kbt_export.json)
    --help                    Print this help
+   --host       IP:PORT      Ip address of elasticsearch instance (defaults to localhost:9200)
+   --index      INDEX        Kibana index (defaults to .kibana)
+   --output     FILE         Backup file (defaults to kbt_export.json)
+   --overwrite               Overwrite existing documents during import (default is to skip existing docs)
+   --type       TYPE         Type of kibana resources {search|visualization|dashboard} (defaults to all)
 
  COMMAND
    list                      list resource's id
    export                    export resources
+   import                    import resources
 ```
