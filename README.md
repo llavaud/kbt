@@ -4,6 +4,8 @@ This script allow to list and export kibana resources like search, visualization
 
 You can export everything you want from Kibana interface, but if you want to setup a cronjob to do regular backup or just do it in CLI, this is the right tool to use.
 
+Tested on Kibana 4.x and 5.x.
+
 ## Table of contents
 * [Installation](#installation)
   * [Package (favourite)](#package)

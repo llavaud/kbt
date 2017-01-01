@@ -10,7 +10,6 @@ use HTTP::Request;
 use IO::File;
 use JSON qw/to_json from_json/;
 use LWP::UserAgent;
-use Data::Dumper;
 
 GetOptions(
     'help'     => sub { HelpMessage(0) },
@@ -139,6 +138,6 @@ Laurent Lavaud
 
 =head1 VERSION
 
-0.2
+0.3
 
 =cut

@@ -1,3 +1,9 @@
+kbt (0.3) stable; urgency=medium
+
+  * use elasticseach instance instead of kibana
+
+ -- Laurent Lavaud <l.lavaud@gmail.com>  Sun, 01 Jan 2017 14:06:48 +0100
+
 kbt (0.2) stable; urgency=medium
 
   * correcting a bug with the exported json format
