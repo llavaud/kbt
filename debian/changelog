@@ -1,3 +1,10 @@
+kbt (0.4) stable; urgency=medium
+
+  * add import function, close #1
+  * refactoring
+
+ -- Laurent Lavaud <l.lavaud@gmail.com>  Sun, 01 Jan 2017 22:13:42 +0100
+
 kbt (0.3) stable; urgency=medium
 
   * use elasticseach instance instead of kibana
