@@ -12,15 +12,17 @@ use JSON qw/to_json from_json/;
 use LWP::UserAgent;
 
 GetOptions(
-    'help'     => sub { HelpMessage(0) },
-    'host=s'   => \(my $host = 'localhost:9200'),
-    'index=s'  => \(my $index = '.kibana'),
-    'output=s' => \(my $output = 'kbt_export.json'),
-    'type=s'   => \(my $type = 'all'),
+    'file=s'    => \(my $file = 'kbt_export.json'),
+    'help'      => sub { HelpMessage(0) },
+    'host=s'    => \(my $host = 'localhost:9200'),
+    'index=s'   => \(my $index = '.kibana'),
+    'output=s'  => \(my $output = 'kbt_export.json'),
+    'overwrite' => \(my $overwrite = 0),
+    'type=s'    => \(my $type = 'all'),
 ) or HelpMessage(1);
 
 # add default port if missing
-$host =~ s/^(.*)(?!\:\d+)$/$1:9200/;
+$host =~ s/^([^(?\:\d+)]+)(?!\:\d+)$/$1:9200/;
 
 my $cmd = $ARGV[0];
 
@@ -32,9 +34,14 @@ if ($cmd eq 'list') {
 elsif ($cmd eq 'export') {
     &export();
 }
+elsif ($cmd eq 'import') {
+    &import();
+}
 else {
     HelpMessage(1);
 }
+
+exit 0;
 
 sub list {
     my $export = shift;
@@ -45,15 +52,14 @@ sub list {
 
         next if ($type ne 'all' and $t ne $type);
 
-        print '* '.uc $t.":\n" if $type eq 'all' and $export == 0;
+        my $ua = LWP::UserAgent->new;
         my $request = HTTP::Request->new(POST => "http://$host/$index/$t/_search");
         $request->content('{"query":{"match_all":{}}}');
-
-        my $ua = LWP::UserAgent->new;
         my $response = $ua->request($request);
 
         if ($response->is_success) {
             my $json = from_json($response->decoded_content);
+            print '* '.uc $t.":\n" if ($type eq 'all' and $export == 0);
             foreach (@{ $json->{'hits'}->{'hits'} }) {
                 if ($export == 0) {
                     print "$_->{'_id'}\n";
@@ -62,11 +68,11 @@ sub list {
                     push @{ $ids->{'docs'} }, { '_id' => $_->{'_id'}, '_type' => $t };
                 }
             }
+            print "\n" if ($type eq 'all' and $export == 0);
         }
         else {
-            print STDERR $response->status_line."\n";
+            print STDERR "Failed to get \'$t\' id(s): ".$response->status_line."\n";
         }
-        print "\n" if $type eq 'all' and $export == 0;
     }
 
     return ($export == 1) ? $ids : 1; 
@@ -77,15 +83,17 @@ sub export {
 
     my $json = to_json($ids);
 
+    my $ua = LWP::UserAgent->new;
     my $request = HTTP::Request->new(POST => "http://$host/$index/_mget");
     $request->content($json);
-
-    my $ua = LWP::UserAgent->new;
     my $response = $ua->request($request);
 
-    my $fh = IO::File->new($output, q{>});
-
     if ($response->is_success) {
+        my $fh;
+        unless ($fh = IO::File->new($output, q{>})) {
+            die "Failed to open file \'$output\': $!\n";
+        }
+
         my $res = from_json($response->decoded_content);
         my $export = [];
         foreach (@{ $res->{'docs'} }) {
@@ -95,12 +103,36 @@ sub export {
             push @{ $export }, $_;
         }
         print $fh to_json($export);
+        close $fh;
     }
     else {
-        print STDERR $response->status_line."\n";
+        print STDERR "Failed to export documents: ".$response->status_line."\n";
     }
 
-    close $fh;
+    return 1;
+}
+
+sub import {
+    my $file_json;
+    if (my $fh = IO::File->new($file, q{<})) {
+        $file_json = <$fh>;
+        close $fh;
+    } else {
+        die "Failed to open file \'$file\': $!\n";
+    }
+
+    my $import = from_json($file_json);
+
+    my $create = $overwrite ? '' : '/_create';
+
+    foreach my $doc (@{ $import }) {
+        my $ua = LWP::UserAgent->new;
+        my $request = HTTP::Request->new(POST => "http://$host/$index/$doc->{'_type'}/$doc->{'_id'}$create");
+        $request->content(to_json($doc->{'_source'}));
+        my $response = $ua->request($request);
+        print STDERR "Failed to import \'$doc->{'_id'}\' ($doc->{'_type'}): ".$response->status_line."\n"
+            if (!$response->is_success and $response->code != 409);
+    }
 
     return 1;
 }
@@ -115,22 +147,25 @@ kbt - Kibana Backup Tool
 
 =head1 DESCRIPTION
 
-This script allow to list and export kibana resources like search, visualization and dashboard.
+This script allow to list, export and import kibana resources (search, visualization and dashboard).
 
 =head1 SYNOPSIS
 
 kbt [OPTIONS] <COMMAND>
 
  OPTIONS
-   --type     TYPE           Type of kibana resources {search|visualization|dashboard} (defaults to all)
-   --output   FILE           Backup file (defaults to kbt_export.json)
-   --host     IP:PORT        Ip address of elasticsearch instance (defaults to localhost:9200)
-   --index    INDEX          Kibana index (defaults to .kibana)
+   --file       FILE         Backup file to import (defaults to kbt_export.json)
    --help                    Print this help
+   --host       IP:PORT      Ip address of elasticsearch instance (defaults to localhost:9200)
+   --index      INDEX        Kibana index (defaults to .kibana)
+   --output     FILE         Backup file (defaults to kbt_export.json)
+   --overwrite               Overwrite existing documents during import (default is to skip existing docs)
+   --type       TYPE         Type of kibana resources {search|visualization|dashboard} (defaults to all)
 
  COMMAND
    list                      list resource's id
    export                    export resources
+   import                    import resources
 
 =head1 AUTHOR
 
@@ -138,6 +173,6 @@ Laurent Lavaud
 
 =head1 VERSION
 
-0.3
+0.4
 
 =cut
