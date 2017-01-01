@@ -1,2 +1,3 @@
 kbt usr/bin
-man/kbt.1 usr/share/man/man1
+man1/kbt.1 usr/share/man/man1
+bash_completion.d/kbt etc/bash_completion.d
