@@ -22,11 +22,14 @@ GetOptions(
 ) or HelpMessage(1);
 
 # add default port if missing
-$host =~ s/^([^(?\:\d+)]+)(?!\:\d+)$/$1:9200/;
+$host =~ s/^([\w\-\.]+)(?!\:\d+)$/$1:9200/;
 
 my $cmd = $ARGV[0];
 
-HelpMessage(1) unless $cmd;
+# params check
+HelpMessage(1) if @ARGV != 1;
+HelpMessage(1) if $type !~ /^(?:all|search|visualization|dashboard)$/;
+HelpMessage(1) if $host !~ /^[\w\-\.]+\:\d+$/;
 
 if ($cmd eq 'list') {
     &list(0);
@@ -46,7 +49,7 @@ exit 0;
 sub list {
     my $export = shift;
 
-    my $ids = {};
+    my $ids = { 'docs' => [] };
 
     foreach my $t ('search', 'visualization', 'dashboard') {
 
@@ -60,12 +63,12 @@ sub list {
         if ($response->is_success) {
             my $json = from_json($response->decoded_content);
             print '* '.uc $t.":\n" if ($type eq 'all' and $export == 0);
-            foreach (@{ $json->{'hits'}->{'hits'} }) {
+            foreach my $doc (@{ $json->{'hits'}->{'hits'} }) {
                 if ($export == 0) {
-                    print "$_->{'_id'}\n";
+                    print "$doc->{'_id'}\n";
                 }
                 elsif ($export == 1) {
-                    push @{ $ids->{'docs'} }, { '_id' => $_->{'_id'}, '_type' => $t };
+                    push @{ $ids->{'docs'} }, { '_id' => $doc->{'_id'}, '_type' => $t };
                 }
             }
             print "\n" if ($type eq 'all' and $export == 0);
@@ -80,6 +83,9 @@ sub list {
 
 sub export {
     my $ids = &list(1);
+
+    # no documents to export
+    return 1 if @{ $ids->{'docs'} } < 1;
 
     my $json = to_json($ids);
 
@@ -96,11 +102,11 @@ sub export {
 
         my $res = from_json($response->decoded_content);
         my $export = [];
-        foreach (@{ $res->{'docs'} }) {
-            delete $_->{'found'};
-            delete $_->{'_version'};
-            delete $_->{'_index'};
-            push @{ $export }, $_;
+        foreach my $doc (@{ $res->{'docs'} }) {
+            delete $doc->{'found'};
+            delete $doc->{'_version'};
+            delete $doc->{'_index'};
+            push @{ $export }, $doc;
         }
         print $fh to_json($export);
         close $fh;
@@ -126,6 +132,8 @@ sub import {
     my $create = $overwrite ? '' : '/_create';
 
     foreach my $doc (@{ $import }) {
+        next if ($type ne 'all' and $doc->{'_type'} ne $type);
+
         my $ua = LWP::UserAgent->new;
         my $request = HTTP::Request->new(POST => "http://$host/$index/$doc->{'_type'}/$doc->{'_id'}$create");
         $request->content(to_json($doc->{'_source'}));
@@ -156,7 +164,7 @@ kbt [OPTIONS] <COMMAND>
  OPTIONS
    --file       FILE         Backup file to import (defaults to kbt_export.json)
    --help                    Print this help
-   --host       IP:PORT      Ip address of elasticsearch instance (defaults to localhost:9200)
+   --host       IP[:PORT]    Ip address of elasticsearch instance (defaults to localhost:9200)
    --index      INDEX        Kibana index (defaults to .kibana)
    --output     FILE         Backup file (defaults to kbt_export.json)
    --overwrite               Overwrite existing documents during import (default is to skip existing docs)

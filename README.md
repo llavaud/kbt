@@ -4,7 +4,7 @@ This script allow to list, export and import kibana resources (search, visualiza
 
 You can export everything you want from Kibana interface, but if you want to setup a cronjob to do regular backup or just do it in CLI, this is the right tool to use.
 
-Tested on Kibana 4.x and 5.x.
+Tested on Kibana **4.x** and **5.x**.
 
 ## Table of contents
 * [Installation](#installation)
@@ -54,7 +54,7 @@ kbt [OPTIONS] <COMMAND>
  OPTIONS
    --file       FILE         Backup file to import (defaults to kbt_export.json)
    --help                    Print this help
-   --host       IP:PORT      Ip address of elasticsearch instance (defaults to localhost:9200)
+   --host       IP[:PORT]    Ip address of elasticsearch instance (defaults to localhost:9200)
    --index      INDEX        Kibana index (defaults to .kibana)
    --output     FILE         Backup file (defaults to kbt_export.json)
    --overwrite               Overwrite existing documents during import (default is to skip existing docs)
