@@ -49,7 +49,19 @@ exit 0;
 sub list {
     my $export = shift;
 
+    my $ctype;
+    my $cid;
     my $ids = { 'docs' => [] };
+
+# define list output format
+format STDOUT_TOP =
+Type            ID
+-------------   ----------------------------------------------------------------
+.
+format STDOUT =
+@<<<<<<<<<<<<   @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<...
+$ctype, $cid
+.
 
     foreach my $t ('search', 'visualization', 'dashboard') {
 
@@ -62,16 +74,16 @@ sub list {
 
         if ($response->is_success) {
             my $json = from_json($response->decoded_content);
-            print '* '.uc $t.":\n" if ($type eq 'all' and $export == 0);
             foreach my $doc (sort { $a->{'_id'} cmp $b->{'_id'} } @{ $json->{'hits'}->{'hits'} }) {
                 if ($export == 0) {
-                    print "$doc->{'_id'}\n";
+                    $ctype = $t;
+                    $cid = $doc->{'_id'};
+                    write STDOUT;
                 }
                 elsif ($export == 1) {
                     push @{ $ids->{'docs'} }, { '_id' => $doc->{'_id'}, '_type' => $t };
                 }
             }
-            print "\n" if ($type eq 'all' and $export == 0);
         }
         else {
             print STDERR "Failed to get \'$t\' id(s): ".$response->status_line."\n";
