@@ -36,7 +36,7 @@ sudo apt-get install kbt
 
 ### Archive
 
-If you dont want to add a new repository on your system you can also retrieve the [latest zip/tar.gz archive](https://github.com/llavaud/kbt/releases/latest)
+If you dont want to add a new repository on your system you can also retrieve the [latest zip/tar.gz archive](releases/latest)
 
 This script depends on several Perl library, so you need to install the following **Debian/Ubuntu** packages before using it:
 
