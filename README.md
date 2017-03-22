@@ -15,6 +15,7 @@ Tested on Kibana **4.x** and **5.x**.
 ## Installation
 
 <a name="package"/>
+
 ### Package (favourite)
 
 I have setup a **Debian/Ubuntu** apt repository to distribute this package
