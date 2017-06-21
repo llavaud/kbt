@@ -2,35 +2,35 @@
 Hash: SHA512
 
 Codename: stable
-Date: Wed, 21 Jun 2017 11:16:28 UTC
+Date: Wed, 21 Jun 2017 13:08:04 UTC
 Architectures: amd64
 Components: main
 Description: Apt repository for project kbt
 MD5Sum:
- 19df483a69502fffe39e6473e39926ae 613 main/binary-amd64/Packages
- 1e78f2aac3793062fc719dcff04461c1 452 main/binary-amd64/Packages.gz
+ d187abece3a270cc53d1995a68f99b44 613 main/binary-amd64/Packages
+ 02cf33f2b96c78d658a673035894a521 452 main/binary-amd64/Packages.gz
  99bf69ab823874ffb670733f129fa47a 80 main/binary-amd64/Release
 SHA1:
- 768c591bf0328ff9d668b652ef65f7fbe6f853c1 613 main/binary-amd64/Packages
- eabd7040a35e8eb4d6210481d44cb6c833ca873d 452 main/binary-amd64/Packages.gz
+ 5374fbd1fb1b9be22c05c3bf97c855002d389f86 613 main/binary-amd64/Packages
+ a1601ccf3f01b8ef537b9b05c03c5219008d86c7 452 main/binary-amd64/Packages.gz
  27c3b5a7a980046408e0acc75551c9731395562b 80 main/binary-amd64/Release
 SHA256:
- d9a83707082c5e4f93a07fad63b8fe1feee1dbaaf0cf3fa0b781410b3ff84b25 613 main/binary-amd64/Packages
- 0daf2baf330b17ab9c33eb1a53a0626d31426df0b401da1322a180a830727b6d 452 main/binary-amd64/Packages.gz
+ dd42195136cdb8b4ac76f254c329bc1bdcc411fc3c06a2f75d9e3fc9c863c856 613 main/binary-amd64/Packages
+ ff2d247b14eb97d06a45d75fc06d1e8d85c32e15b7ac73c81cf848daf542aee8 452 main/binary-amd64/Packages.gz
  ffb2b527a129df85a128e39786ee49dc65ea9112d9f957c7ad237723fc7acdc5 80 main/binary-amd64/Release
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAEBCgAGBQJZSlWMAAoJEF0Wt+X9q1ZniAQP/jN227vLqBGhCgvnA0RPF7GP
-XGziQju28HFV8mBPSEm57lymLLB1Ec/U1eFOOsmnOps0wpbZlokf2k4GHtxd6IX/
-RFbSaZasGzxGmy+loXeFui8AunKAQWj+H/vREcppBZMLIrDJBSJQ+48WDzfloKhU
-oQH0S2BzTf27I2YNg6cCYSf6s4zeb89fTLdHSg2R/+f5fVNLjlSCMsgRvY9bGNRe
-7x5kyTX+L8kwVSeiLDpOozD7E9Kdtm7Sb1Yu8nQaFXAq7dAo1UCkKXAZxGD8/T24
-nI71mWqO9ySUzjrB4HJ8zmcD6G+jBjfHPK/oEc5+SP1NyGlstXHC3Nj6nKjpOpVA
-rau1lKiZTZd+V48QAs8wKO0p7Iek7kOzNwiP6uWHYGtSLlH/2Sb4ZPvZhDH3yHuT
-Y8OvBPOm5aLONGrGNUm3FO+2+Q3itwVZ7Ll8U9X8ZvRKFE+jGtLYJwpxjKE6UQUF
-Dira9bXJ+vORXEvFYpy0T14qMYnCxpzYmgyay8u7xwjK14SL33v/uEGVWtLlyXb7
-QclR2aVAwpgaYLYEgi3EtCdgIHP1LbpXlBE9zxnxEGy8FcyIsDQc3o8T7ZWg1/qL
-vo825ZpTCa/m23kA/HvaNlDK8VL9UZEllWXeuuy3vKGISdSm3s0HLXnQGwwkHl9N
-KmBgSzhsbu8F436DlmLL
-=f6sT
+iQIcBAEBCgAGBQJZSm+0AAoJEF0Wt+X9q1ZnOMoQAJfXPQtjd+gW3IHWnIITyyeN
+oAR0TdJgV7UEDJFEQXZyPWFFLPw5AtMh5KlmAF6OPhKPd2L6CtmbrzUvkfnVrTii
+5yXuuaW4eYqAWTr4cy2rE6V01nWVWOV6xKVvriZws+UISDvI1cOKPsAtpY1XVn67
+gYpmAUPQwBrBcSY5lHYUVR3Q1aeEzkTYM5DNg6sDCOhHZnKtVBCxn67NTQA3Y+6B
+5lrUfSGwsYnPCvwFMfJ1Th+ys8xYEfjvD4gLgLs9cJgMvEjFCKynjadkxTmznF1m
+Cw6mzS8rLWPwaYxZWDkzNIPDuQVTGuGQb5/AgPhD8X9wVHEblLCtsohNklu+0aZ3
+1+Nf+lOg0DzUxxJvXW4hDAhsnZKlNtAlewvhRdvqXg1h/FzQa1akkA76wTxYi+rN
+mmszrtgV7GWJtW14xMVYPhBqDmzrZrQG7/3lWZI3YJRWz2PzWYHX+xTcUaf8wOPn
+Zq9U+SI+fx3rX1LChMRkN85doRdtXZXPUb92PHAoYnnJWMzp6bfqIm+e+3XlWZNg
+R5w3/JqkL6Bk48jtVZEPvBcnP7L++bdA1JGkiED1JaklDmSNkKYXaswAIjkI+noQ
+u3QicgZXCdXh7TK7nBBsI1HhwghWhVOaf1HfYiTkpR7d//w+L7eE9h3SDC0Zo6HY
+4sz97Qk3ZCivrbVcGVfI
+=Diej
 -----END PGP SIGNATURE-----
