@@ -1,3 +1,9 @@
+kbt (0.7) stable; urgency=medium
+
+  * make output path if not exist
+
+ -- Laurent Lavaud <l.lavaud@gmail.com>  Wed, 21 Jun 2017 15:07:03 +0200
+
 kbt (0.6) stable; urgency=medium
 
   * remove dependency on ${perl:Depends}
