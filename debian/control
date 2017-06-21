@@ -10,6 +10,6 @@ Vcs-Browser: https://github.com/llavaud/kbt
 
 Package: kbt
 Architecture: all
-Depends: ${perl:Depends}, perl (>=5.10), libhttp-message-perl, libjson-perl, libwww-perl
+Depends: perl (>=5.10), libhttp-message-perl, libjson-perl, libwww-perl
 Description: kbt - Kibana Backup Tool
  This script allow to list, export and import kibana resources (search, visualization and dashboard).
