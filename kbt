@@ -5,6 +5,8 @@ use 5.010;
 use strict;
 use warnings;
 
+use File::Basename qw/fileparse/;
+use File::Path qw/make_path/;
 use Getopt::Long qw/GetOptions HelpMessage/;
 use HTTP::Request;
 use IO::File;
@@ -99,6 +101,8 @@ sub export {
     # no documents to export
     return 1 if @{ $ids->{'docs'} } < 1;
 
+    my ($name, $dir, $ext) = fileparse($output, qr/\.[^.]*/);
+
     my $json = to_json($ids);
 
     my $ua = LWP::UserAgent->new;
@@ -108,6 +112,9 @@ sub export {
 
     if ($response->is_success) {
         my $fh;
+
+        make_path $dir unless -d $dir;
+
         unless ($fh = IO::File->new($output, q{>})) {
             die "Failed to open file \'$output\': $!\n";
         }
