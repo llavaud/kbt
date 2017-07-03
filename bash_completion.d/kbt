@@ -5,7 +5,7 @@ _kbt()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-    options="--file --help --host --index --output --overwrite --type list export import"
+    options="--file --help --host --index --output --overwrite --ssl_noverify --type list export import"
     types="search visualization dashboard"
 
     case "${prev}" in
