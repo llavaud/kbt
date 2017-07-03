@@ -14,24 +14,27 @@ use JSON qw/to_json from_json/;
 use LWP::UserAgent;
 
 GetOptions(
-    'file=s'    => \(my $file = 'kbt_export.json'),
-    'help'      => sub { HelpMessage(0) },
-    'host=s'    => \(my $host = 'localhost:9200'),
-    'index=s'   => \(my $index = '.kibana'),
-    'output=s'  => \(my $output = 'kbt_export.json'),
-    'overwrite' => \(my $overwrite = 0),
-    'type=s'    => \(my $type = 'all'),
+    'file=s'       => \(my $file = 'kbt_export.json'),
+    'help'         => sub { HelpMessage(0) },
+    'host=s'       => \(my $h = 'http://localhost:9200'),
+    'index=s'      => \(my $index = '.kibana'),
+    'output=s'     => \(my $output = 'kbt_export.json'),
+    'overwrite'    => \(my $overwrite = 0),
+    'ssl_noverify' => \(my $ssl_noverify),
+    'type=s'       => \(my $type = 'all'),
 ) or HelpMessage(1);
 
-# add default port if missing
-$host =~ s/^([\w\-\.]+)(?!\:\d+)$/$1:9200/;
+my ($scheme, $host, $port) = $h =~ /^(?:(https?)\:\/\/)?([^:]+)(?:\:(\d*))?$/;
+
+$scheme //= 'http';
+$port //= '9200';
 
 my $cmd = $ARGV[0];
 
 # params check
-HelpMessage(1) if @ARGV != 1;
-HelpMessage(1) if $type !~ /^(?:all|search|visualization|dashboard)$/;
-HelpMessage(1) if $host !~ /^[\w\-\.]+\:\d+$/;
+HelpMessage('[ERROR] Bad number of arguments') if @ARGV != 1;
+HelpMessage('[ERROR] Bad value for \'type\'') if $type !~ /^(?:all|search|visualization|dashboard)$/;
+HelpMessage('[ERROR] Invalid hostname') if $host !~ /^[\w\-\.]+$/;
 
 if ($cmd eq 'list') {
     &list(0);
@@ -43,7 +46,7 @@ elsif ($cmd eq 'import') {
     &import();
 }
 else {
-    HelpMessage(1);
+    HelpMessage("[ERROR] Bad command");
 }
 
 exit 0;
@@ -52,17 +55,17 @@ sub list {
     my $export = shift;
 
     my $ctype;
-    my $cid;
+    my $ctitle;
     my $ids = { 'docs' => [] };
 
 # define list output format
 format STDOUT_TOP =
-Type            ID
+Type            Title
 -------------   ----------------------------------------------------------------
 .
 format STDOUT =
-@<<<<<<<<<<<<   @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<...
-$ctype, $cid
+@<<<<<<<<<<<<   @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<...
+$ctype, $ctitle
 .
 
     foreach my $t ('search', 'visualization', 'dashboard') {
@@ -70,16 +73,17 @@ $ctype, $cid
         next if ($type ne 'all' and $t ne $type);
 
         my $ua = LWP::UserAgent->new;
-        my $request = HTTP::Request->new(POST => "http://$host/$index/$t/_search");
+        $ua->ssl_opts('verify_hostname' => '0') if defined $ssl_noverify;
+        my $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/$t/_search");
         $request->content('{"query":{"match_all":{}}}');
         my $response = $ua->request($request);
 
         if ($response->is_success) {
             my $json = from_json($response->decoded_content);
-            foreach my $doc (sort { $a->{'_id'} cmp $b->{'_id'} } @{ $json->{'hits'}->{'hits'} }) {
+            foreach my $doc (sort { $a->{'_source'}->{'title'} cmp $b->{'_source'}->{'title'} } @{ $json->{'hits'}->{'hits'} }) {
                 if ($export == 0) {
                     $ctype = $t;
-                    $cid = $doc->{'_id'};
+                    $ctitle = $doc->{'_source'}->{'title'};
                     write STDOUT;
                 }
                 elsif ($export == 1) {
@@ -106,7 +110,8 @@ sub export {
     my $json = to_json($ids);
 
     my $ua = LWP::UserAgent->new;
-    my $request = HTTP::Request->new(POST => "http://$host/$index/_mget");
+    $ua->ssl_opts('verify_hostname' => '0') if defined $ssl_noverify;
+    my $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/_mget");
     $request->content($json);
     my $response = $ua->request($request);
 
@@ -154,7 +159,8 @@ sub import {
         next if ($type ne 'all' and $doc->{'_type'} ne $type);
 
         my $ua = LWP::UserAgent->new;
-        my $request = HTTP::Request->new(POST => "http://$host/$index/$doc->{'_type'}/$doc->{'_id'}$create");
+        $ua->ssl_opts('verify_hostname' => '0') if defined $ssl_noverify;
+        my $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/$doc->{'_type'}/$doc->{'_id'}$create");
         $request->content(to_json($doc->{'_source'}));
         my $response = $ua->request($request);
         print STDERR "Failed to import \'$doc->{'_id'}\' ($doc->{'_type'}): ".$response->status_line."\n"
@@ -181,18 +187,19 @@ This script allow to list, export and import kibana resources (search, visualiza
 kbt [OPTIONS] <COMMAND>
 
  OPTIONS
-   --file       FILE         Backup file to import (defaults to kbt_export.json)
-   --help                    Print this help
-   --host       IP[:PORT]    Ip address of elasticsearch instance (defaults to localhost:9200)
-   --index      INDEX        Kibana index (defaults to .kibana)
-   --output     FILE         Backup file (defaults to kbt_export.json)
-   --overwrite               Overwrite existing documents during import (default is to skip existing docs)
-   --type       TYPE         Type of kibana resources {search|visualization|dashboard} (defaults to all)
+   --file          FILE                 Backup file to import (defaults to kbt_export.json)
+   --help                               Print this help
+   --host          [SCHEME]IP[:PORT]    Ip address of elasticsearch instance (defaults to http://localhost:9200)
+   --index         INDEX                Kibana index (defaults to .kibana)
+   --output        FILE                 Backup file (defaults to kbt_export.json)
+   --overwrite                          Overwrite existing documents during import (default is to skip existing docs)
+   --ssl_noverify                       Do not verify matching hostname if ssl is enabled (verify by default)
+   --type          TYPE                 Type of kibana resources {search|visualization|dashboard} (defaults to all)
 
  COMMAND
-   list                      list resource's id
-   export                    export resources
-   import                    import resources
+   list                                 list resource's id
+   export                               export resources
+   import                               import resources
 
 =head1 AUTHOR
 
@@ -200,6 +207,6 @@ Laurent Lavaud
 
 =head1 VERSION
 
-0.5
+0.8
 
 =cut
