@@ -1,3 +1,10 @@
+kbt (0.8) stable; urgency=medium
+
+  * allow to request in https, close #4
+  * correcting a bug with the document title when listing
+
+ -- Laurent Lavaud <l.lavaud@gmail.com>  Mon, 03 Jul 2017 14:00:02 +0200
+
 kbt (0.7) stable; urgency=medium
 
   * make output path if not exist
