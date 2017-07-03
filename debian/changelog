@@ -1,3 +1,9 @@
+kbt (0.9) stable; urgency=medium
+
+  * update manpage and bash_completion script 
+
+ -- Laurent Lavaud <l.lavaud@gmail.com>  Mon, 03 Jul 2017 14:20:51 +0200
+
 kbt (0.8) stable; urgency=medium
 
   * allow to request in https, close #4
