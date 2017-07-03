@@ -1,17 +1,17 @@
 Codename: stable
-Date: Wed, 21 Jun 2017 13:08:04 UTC
+Date: Mon, 03 Jul 2017 12:02:25 UTC
 Architectures: amd64
 Components: main
 Description: Apt repository for project kbt
 MD5Sum:
- d187abece3a270cc53d1995a68f99b44 613 main/binary-amd64/Packages
- 02cf33f2b96c78d658a673035894a521 452 main/binary-amd64/Packages.gz
+ 628d1f49ce154500337d1dd03a70e4bd 613 main/binary-amd64/Packages
+ 5d44c449d565ec2a2681b1055b93e4da 451 main/binary-amd64/Packages.gz
  99bf69ab823874ffb670733f129fa47a 80 main/binary-amd64/Release
 SHA1:
- 5374fbd1fb1b9be22c05c3bf97c855002d389f86 613 main/binary-amd64/Packages
- a1601ccf3f01b8ef537b9b05c03c5219008d86c7 452 main/binary-amd64/Packages.gz
+ a2d884587a20fe12c7bc7c8e21c8be1440128a13 613 main/binary-amd64/Packages
+ f4915d55ed6c8c3c6e49182e4c7100ce8680fd84 451 main/binary-amd64/Packages.gz
  27c3b5a7a980046408e0acc75551c9731395562b 80 main/binary-amd64/Release
 SHA256:
- dd42195136cdb8b4ac76f254c329bc1bdcc411fc3c06a2f75d9e3fc9c863c856 613 main/binary-amd64/Packages
- ff2d247b14eb97d06a45d75fc06d1e8d85c32e15b7ac73c81cf848daf542aee8 452 main/binary-amd64/Packages.gz
+ c6b16a1b0ae7cb6ad55cc7213910d39f928c161b5b09a1b17fb379fc41d9617d 613 main/binary-amd64/Packages
+ 885ae367496ef2c5888911e48d9b998b3e0e3ca9533cd23ade58e3829f89a8ec 451 main/binary-amd64/Packages.gz
  ffb2b527a129df85a128e39786ee49dc65ea9112d9f957c7ad237723fc7acdc5 80 main/binary-amd64/Release
