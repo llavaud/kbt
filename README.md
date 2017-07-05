@@ -1,4 +1,4 @@
-# kbt - Kibana Backup Tool.
+# kbt - Kibana Backup Tool
 
 This script allow to list, export and import kibana resources (search, visualization and dashboard).
 
