@@ -74,8 +74,9 @@ $ctype, $ctitle
 
         my $ua = LWP::UserAgent->new;
         $ua->ssl_opts('verify_hostname' => '0') if defined $ssl_noverify;
-        my $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/$t/_search");
+        my $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/$t/_search?size=1000&scroll=1m&sort=_doc");
         $request->content('{"query":{"match_all":{}}}');
+        $request->accept_decodable();
         my $response = $ua->request($request);
 
         if ($response->is_success) {
@@ -113,6 +114,7 @@ sub export {
     $ua->ssl_opts('verify_hostname' => '0') if defined $ssl_noverify;
     my $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/_mget");
     $request->content($json);
+    $request->accept_decodable();
     my $response = $ua->request($request);
 
     if ($response->is_success) {
@@ -162,6 +164,7 @@ sub import {
         $ua->ssl_opts('verify_hostname' => '0') if defined $ssl_noverify;
         my $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/$doc->{'_type'}/$doc->{'_id'}$create");
         $request->content(to_json($doc->{'_source'}));
+        $request->accept_decodable();
         my $response = $ua->request($request);
         print STDERR "Failed to import \'$doc->{'_id'}\' ($doc->{'_type'}): ".$response->status_line."\n"
             if (!$response->is_success and $response->code != 409);
@@ -207,6 +210,6 @@ Laurent Lavaud
 
 =head1 VERSION
 
-0.9
+0.10
 
 =cut
