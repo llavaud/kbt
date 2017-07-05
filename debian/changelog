@@ -1,3 +1,10 @@
+kbt (0.10) stable; urgency=medium
+
+  * correcting a bug with export, by default export was limited to 10 objects, now 1000
+  * request compressed http response
+
+ -- Laurent Lavaud <l.lavaud@gmail.com>  Wed, 05 Jul 2017 09:37:32 +0200
+
 kbt (0.9) stable; urgency=medium
 
   * update manpage and bash_completion script 
