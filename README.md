@@ -42,7 +42,13 @@ If you dont want to add a new repository on your system you can also retrieve th
 This script depends on several Perl library, so you need to install the following **Debian/Ubuntu** packages before using it:
 
 ```bash
-sudo apt-get install libhttp-message-perl libjson-perl libwww-perl
+sudo apt-get install libhttp-message-perl libjson-perl libwww-perl libfile-which-perl
+```
+
+And if you want to export/import to/from an S3 bucket, you need the following too:
+
+```bash
+sudo apt-get install awscli
 ```
 
 Once the packages are installed, you just need to extract the archive
