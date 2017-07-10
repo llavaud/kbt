@@ -1,3 +1,16 @@
+## 0.11 (2017-07-10)
+
+IMPROVEMENTS:
+* add support to export/import to/from an S3 bucket
+* test post-commit hook
+* test post-commit hook
+* test to add a CHANGELOG.md
+* test to add a CHANGELOG.md
+* test to add a CHANGELOG.md
+* test to add a CHANGELOG.md
+
+BUG FIXES:
+
 ## 0.10 (2017-07-05)
 
 IMPROVEMENTS:
