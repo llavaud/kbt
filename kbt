@@ -7,6 +7,8 @@ use warnings;
 
 use File::Basename qw/fileparse/;
 use File::Path qw/make_path/;
+use File::Temp qw/tempfile/;
+use File::Which qw/which/;
 use Getopt::Long qw/GetOptions HelpMessage/;
 use HTTP::Request;
 use IO::File;
@@ -18,7 +20,6 @@ GetOptions(
     'help'         => sub { HelpMessage(0) },
     'host=s'       => \(my $h = 'http://localhost:9200'),
     'index=s'      => \(my $index = '.kibana'),
-    'output=s'     => \(my $output = 'kbt_export.json'),
     'overwrite'    => \(my $overwrite = 0),
     'ssl_noverify' => \(my $ssl_noverify),
     'type=s'       => \(my $type = 'all'),
@@ -28,6 +29,7 @@ my ($scheme, $host, $port) = $h =~ /^(?:(https?)\:\/\/)?([^:]+)(?:\:(\d*))?$/;
 
 $scheme //= 'http';
 $port //= '9200';
+my $s3 = ($file =~ /^s3:\/\//) ? 1 : 0;
 
 my $cmd = $ARGV[0];
 
@@ -35,15 +37,18 @@ my $cmd = $ARGV[0];
 HelpMessage('[ERROR] Bad number of arguments') if @ARGV != 1;
 HelpMessage('[ERROR] Bad value for \'type\'') if $type !~ /^(?:all|search|visualization|dashboard)$/;
 HelpMessage('[ERROR] Invalid hostname') if $host !~ /^[\w\-\.]+$/;
+HelpMessage('[ERROR] Bad file format') if not $s3 and $file !~ /^[\/\w\-\.]+[^\/]$/;
+HelpMessage('[ERROR] Bad file format') if $s3 and $file !~ /^s3:\/\/[\/\w\-\.]+[^\/]$/;
+HelpMessage('[ERROR] Missing awscli binary') if $s3 and not which('aws');
 
 if ($cmd eq 'list') {
-    &list(0);
+    list(0);
 }
 elsif ($cmd eq 'export') {
-    &export();
+    export();
 }
 elsif ($cmd eq 'import') {
-    &import();
+    import();
 }
 else {
     HelpMessage("[ERROR] Bad command");
@@ -101,12 +106,10 @@ $ctype, $ctitle
 }
 
 sub export {
-    my $ids = &list(1);
+    my $ids = list(1);
 
     # no documents to export
     return 1 if @{ $ids->{'docs'} } < 1;
-
-    my ($name, $dir, $ext) = fileparse($output, qr/\.[^.]*/);
 
     my $json = to_json($ids);
 
@@ -118,14 +121,6 @@ sub export {
     my $response = $ua->request($request);
 
     if ($response->is_success) {
-        my $fh;
-
-        make_path $dir unless -d $dir;
-
-        unless ($fh = IO::File->new($output, q{>})) {
-            die "Failed to open file \'$output\': $!\n";
-        }
-
         my $res = from_json($response->decoded_content);
         my $export = [];
         foreach my $doc (@{ $res->{'docs'} }) {
@@ -134,8 +129,7 @@ sub export {
             delete $doc->{'_index'};
             push @{ $export }, $doc;
         }
-        print $fh to_json($export);
-        close $fh;
+        write_file(to_json($export));
     }
     else {
         print STDERR "Failed to export documents: ".$response->status_line."\n";
@@ -144,16 +138,38 @@ sub export {
     return 1;
 }
 
-sub import {
-    my $file_json;
-    if (my $fh = IO::File->new($file, q{<})) {
-        $file_json = <$fh>;
-        close $fh;
+sub write_file {
+    my $json = shift;
+
+    if ($s3) {
+        my $tmp_file = File::Temp->new('kbt.XXXXXX', DIR => '/tmp');
+        my $fh = IO::File->new($tmp_file, q{>});
+        if (defined $fh) {
+            print $fh $json;
+            close $fh;
+        } else {
+            die "Failed to open temporary file \'$tmp_file\': $!\n";
+        }
+        if (system("aws s3 cp --quiet $tmp_file $file")) {
+            die "Failed to upload to \'$file\'\n";
+        }
     } else {
-        die "Failed to open file \'$file\': $!\n";
+        my ($name, $dir, $ext) = fileparse($file, qr/\.[^.]*/);
+        make_path $dir unless -d $dir;
+        my $fh = IO::File->new($file, q{>});
+        if (defined $fh) {
+            print $fh $json;
+            close $fh;
+        } else {
+            die "Failed to open file \'$file\': $!\n";
+        }
     }
 
-    my $import = from_json($file_json);
+    return 1;
+}
+
+sub import {
+    my $import = read_file();
 
     my $create = $overwrite ? '' : '/_create';
 
@@ -173,6 +189,32 @@ sub import {
     return 1;
 }
 
+sub read_file {
+    my $json;
+
+    if ($s3) {
+        my $tmp_file = File::Temp->new('kbt.XXXXXX', DIR => '/tmp');
+        if (system("aws s3 cp --quiet $file $tmp_file")) {
+            die "Failed to download from \'$file\'\n";
+        }
+        if (my $fh = IO::File->new($tmp_file, q{<})) {
+            $json = <$fh>;
+            close $fh;
+        } else {
+            die "Failed to open file \'$tmp_file\': $!\n";
+        }
+    } else {
+        if (my $fh = IO::File->new($file, q{<})) {
+            $json = <$fh>;
+            close $fh;
+        } else {
+            die "Failed to open file \'$file\': $!\n";
+        }
+    }
+
+    return from_json($json);
+}
+
 __END__
 
 =encoding utf8
@@ -190,11 +232,10 @@ This script allow to list, export and import kibana resources (search, visualiza
 kbt [OPTIONS] <COMMAND>
 
  OPTIONS
-   --file          FILE                 Backup file to import (defaults to kbt_export.json)
+   --file          FILE|S3_SCHEME       File to export/import (defaults to kbt_export.json)
    --help                               Print this help
    --host          [SCHEME]IP[:PORT]    Ip address of elasticsearch instance (defaults to http://localhost:9200)
    --index         INDEX                Kibana index (defaults to .kibana)
-   --output        FILE                 Backup file (defaults to kbt_export.json)
    --overwrite                          Overwrite existing documents during import (default is to skip existing docs)
    --ssl_noverify                       Do not verify matching hostname if ssl is enabled (verify by default)
    --type          TYPE                 Type of kibana resources {search|visualization|dashboard} (defaults to all)
@@ -203,6 +244,14 @@ kbt [OPTIONS] <COMMAND>
    list                                 list resource's id
    export                               export resources
    import                               import resources
+
+Examples:
+
+  * export all resources in a local file
+      kbt export --file my_json
+
+  * export search resources in file on S3
+      kbt export --type search --file s3://my_bucket/my_json
 
 =head1 AUTHOR
 
