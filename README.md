@@ -53,11 +53,10 @@ Once the packages are installed, you just need to extract the archive
 kbt [OPTIONS] <COMMAND>
 
  OPTIONS
-   --file          FILE                 Backup file to import (defaults to kbt_export.json)
+   --file          FILE|S3_SCHEME       File to export/import (defaults to kbt_export.json)
    --help                               Print this help
    --host          [SCHEME]IP[:PORT]    Ip address of elasticsearch instance (defaults to http://localhost:9200)
    --index         INDEX                Kibana index (defaults to .kibana)
-   --output        FILE                 Backup file (defaults to kbt_export.json)
    --overwrite                          Overwrite existing documents during import (default is to skip existing docs)
    --ssl_noverify                       Do not verify matching hostname if ssl is enabled (verify by default)
    --type          TYPE                 Type of kibana resources {search|visualization|dashboard} (defaults to all)
@@ -66,4 +65,12 @@ kbt [OPTIONS] <COMMAND>
    list                                 list resource's id
    export                               export resources
    import                               import resources
+
+Examples:
+
+  * export all resources in a local file
+      kbt export --file my_json
+
+  * export search resources in file on S3
+      kbt export --type search --file s3://my_bucket/my_json
 ```
