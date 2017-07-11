@@ -37,8 +37,8 @@ my $cmd = $ARGV[0];
 HelpMessage('[ERROR] Bad number of arguments') if @ARGV != 1;
 HelpMessage('[ERROR] Bad value for \'type\'') if $type !~ /^(?:all|search|visualization|dashboard)$/;
 HelpMessage('[ERROR] Invalid hostname') if $host !~ /^[\w\-\.]+$/;
-HelpMessage('[ERROR] Bad file format') if not $s3 and $file !~ /^[\/\w\-\.]+[^\/]$/;
-HelpMessage('[ERROR] Bad file format') if $s3 and $file !~ /^s3:\/\/[\/\w\-\.]+[^\/]$/;
+HelpMessage('[ERROR] Bad file format') if not $s3 and $file !~ /^[\/\w\-\.]*\w$/;
+HelpMessage('[ERROR] Bad file format') if $s3 and $file !~ /^s3:\/\/[\/\w\-\.]*\w$/;
 HelpMessage('[ERROR] Missing awscli binary') if $s3 and not which('aws');
 
 if ($cmd eq 'list') {
