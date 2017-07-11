@@ -1,3 +1,10 @@
+## 0.12 (2017-07-11)
+
+IMPROVEMENTS:
+
+BUG FIXES:
+* update file format regex
+
 ## 0.11 (2017-07-10)
 
 IMPROVEMENTS:
