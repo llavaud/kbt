@@ -1,3 +1,9 @@
+kbt (0.12) stable; urgency=medium
+
+  * update file format regex
+
+ -- Laurent Lavaud <l.lavaud@gmail.com>  Tue, 11 Jul 2017 11:06:37 +0200
+
 kbt (0.11) stable; urgency=medium
 
   * add support to export/import to/from an S3 bucket
