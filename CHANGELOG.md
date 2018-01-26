@@ -1,3 +1,12 @@
+## 0.13 (2018-01-26)
+
+IMPROVEMENTS:
+* Merge branch 'master' of github.com:llavaud/kbt
+* add support for Kibana/Elasticsearch 6.x
+* add support for Kibana/Elasticsearch 6.x
+
+BUG FIXES:
+
 ## 0.12 (2017-07-11)
 
 IMPROVEMENTS:
