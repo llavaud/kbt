@@ -41,6 +41,10 @@ HelpMessage('[ERROR] Bad file format') if not $s3 and $file !~ /^[\/\w\-\.]*\w$/
 HelpMessage('[ERROR] Bad file format') if $s3 and $file !~ /^s3:\/\/[\/\w\-\.]*\w$/;
 HelpMessage('[ERROR] Missing awscli binary') if $s3 and not which('aws');
 
+my $version = get_version();
+
+HelpMessage('[ERROR] Not compatible with elasticsearch version') if (not defined $version or $version !~ /^[456]\./);
+
 if ($cmd eq 'list') {
     list(0);
 }
@@ -79,21 +83,39 @@ $ctype, $ctitle
 
         my $ua = LWP::UserAgent->new;
         $ua->ssl_opts('verify_hostname' => '0') if defined $ssl_noverify;
-        my $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/$t/_search?size=1000&scroll=1m&sort=_doc");
-        $request->content('{"query":{"match_all":{}}}');
+        my $request;
+        if ($version =~ /^6\./) {
+            $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/_search?size=1000&scroll=1m&sort=_doc");
+            $request->content("{\"query\":{\"bool\":{\"must\":[{\"match_all\":{}}],\"filter\":[{\"bool\":{\"should\":[{\"term\":{\"_type\":\"$t\"}},{\"term\":{\"type\":\"$t\"}}]}}]}}}");
+        } else {
+            $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/$t/_search?size=1000&scroll=1m&sort=_doc");
+            $request->content('{"query":{"match_all":{}}}');
+        }
         $request->accept_decodable();
+        $request->header('Content-Type' => 'application/json');
         my $response = $ua->request($request);
 
         if ($response->is_success) {
             my $json = from_json($response->decoded_content);
-            foreach my $doc (sort { $a->{'_source'}->{'title'} cmp $b->{'_source'}->{'title'} } @{ $json->{'hits'}->{'hits'} }) {
+            foreach my $doc (sort {
+                if ($version =~ /^6\./) {
+                    $a->{'_source'}->{$t}->{'title'} cmp $b->{'_source'}->{$t}->{'title'};
+                } else {
+                    $a->{'_source'}->{'title'} cmp $b->{'_source'}->{'title'};
+                }
+                } @{ $json->{'hits'}->{'hits'} }) {
+
                 if ($export == 0) {
                     $ctype = $t;
-                    $ctitle = $doc->{'_source'}->{'title'};
+                    $ctitle = ($version =~ /^6\./) ? $doc->{'_source'}->{$t}->{'title'} : $doc->{'_source'}->{'title'};
                     write STDOUT;
                 }
                 elsif ($export == 1) {
-                    push @{ $ids->{'docs'} }, { '_id' => $doc->{'_id'}, '_type' => $t };
+                    if ($version =~ /^6\./) {
+                        push @{ $ids->{'docs'} }, { '_id' => $doc->{'_id'}, '_type' => 'doc' };
+                    } else {
+                        push @{ $ids->{'docs'} }, { '_id' => $doc->{'_id'}, '_type' => $t };
+                    }
                 }
             }
         }
@@ -118,17 +140,28 @@ sub export {
     my $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/_mget");
     $request->content($json);
     $request->accept_decodable();
+    $request->header('Content-Type' => 'application/json');
     my $response = $ua->request($request);
 
     if ($response->is_success) {
         my $res = from_json($response->decoded_content);
         my $export = [];
         foreach my $doc (@{ $res->{'docs'} }) {
-            delete $doc->{'found'};
-            delete $doc->{'_version'};
-            delete $doc->{'_index'};
-            push @{ $export }, $doc;
+            if ($version =~ /^6\./) {
+                my ($type, $id) = $doc->{'_id'} =~ /^(\w+)\:(.*)$/;
+                my $newdoc = {};
+                $newdoc->{'_id'} = $id;
+                $newdoc->{'_type'} = $type;
+                $newdoc->{'_source'} = $doc->{'_source'}->{$type};
+                push @{ $export }, $newdoc;
+            } else {
+                delete $doc->{'found'};
+                delete $doc->{'_version'};
+                delete $doc->{'_index'};
+                push @{ $export }, $doc;
+            }
         }
+        #write_file(to_json($export, { utf8 => 1, pretty => 1 }));
         write_file(to_json($export));
     }
     else {
@@ -178,9 +211,19 @@ sub import {
 
         my $ua = LWP::UserAgent->new;
         $ua->ssl_opts('verify_hostname' => '0') if defined $ssl_noverify;
-        my $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/$doc->{'_type'}/$doc->{'_id'}$create");
-        $request->content(to_json($doc->{'_source'}));
+        my $request;
+        if ($version =~ /^6\./) {
+            my $newdoc = {};
+            $newdoc->{'_source'}->{'type'} = $doc->{'_type'};
+            $newdoc->{'_source'}->{$doc->{'_type'}} = $doc->{'_source'};
+            $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/doc/$doc->{'_type'}:$doc->{'_id'}$create");
+            $request->content(to_json($newdoc->{'_source'}));
+        } else {
+            $request = HTTP::Request->new(POST => "$scheme://$host:$port/$index/$doc->{'_type'}/$doc->{'_id'}$create");
+            $request->content(to_json($doc->{'_source'}));
+        }
         $request->accept_decodable();
+        $request->header('Content-Type' => 'application/json');
         my $response = $ua->request($request);
         print STDERR "Failed to import \'$doc->{'_id'}\' ($doc->{'_type'}): ".$response->status_line."\n"
             if (!$response->is_success and $response->code != 409);
@@ -213,6 +256,25 @@ sub read_file {
     }
 
     return from_json($json);
+}
+
+sub get_version {
+    my $ua = LWP::UserAgent->new;
+    $ua->ssl_opts('verify_hostname' => '0') if defined $ssl_noverify;
+    my $request = HTTP::Request->new(GET => "$scheme://$host:$port/");
+    $request->header('Content-Type' => 'application/json');
+    $request->accept_decodable();
+    my $response = $ua->request($request);
+
+    if ($response->is_success) {
+        my $json = from_json($response->decoded_content);
+        return $json->{'version'}->{'number'};
+    }
+    else {
+        print STDERR "Failed to get elasticsearch version: ".$response->status_line."\n";
+    }
+
+    return undef;
 }
 
 __END__
@@ -259,6 +321,6 @@ Laurent Lavaud
 
 =head1 VERSION
 
-0.12
+0.13
 
 =cut

@@ -1,3 +1,9 @@
+kbt (0.13) stable; urgency=medium
+
+  * add support for Kibana/Elasticsearch 6.x
+
+ -- Laurent Lavaud <l.lavaud@gmail.com>  Fri, 26 Jan 2018 14:58:10 +0100
+
 kbt (0.12) stable; urgency=medium
 
   * update file format regex
