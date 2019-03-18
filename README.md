@@ -22,7 +22,7 @@ I have setup a **Debian/Ubuntu** apt repository to distribute this package
 
 You can add my personal repository to your **`/etc/apt/sources.list`** by adding the following line:
 
-`deb https://llavaud.github.io/kbt/apt stable main`
+`deb [arch=amd64] https://llavaud.github.io/kbt/apt stable main`
 
 You must also retrieve and install my GPG key:
 
